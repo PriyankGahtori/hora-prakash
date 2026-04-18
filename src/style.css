@@ -287,3 +287,80 @@ h3 {
 
   #chart-container { max-width: 100%; }
 }
+
+/* ── Saved Profiles ── */
+.btn-secondary {
+  padding: 0.6rem 1.2rem;
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-secondary:hover { background: #eef2ff; }
+
+.btn-danger-sm {
+  padding: 0.3rem 0.8rem;
+  background: transparent;
+  color: var(--danger);
+  border: 1.5px solid var(--danger);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-danger-sm:hover { background: #fef2f2; }
+
+.profiles-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.profile-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: #f8fafc;
+  gap: 0.75rem;
+  transition: border-color 0.15s;
+}
+.profile-item:hover { border-color: var(--primary); background: #eef2ff; }
+
+.profile-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.profile-name { font-weight: 600; font-size: 0.95rem; color: var(--text); }
+.profile-meta { font-size: 0.78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.profile-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+
+.btn-load {
+  padding: 0.3rem 0.8rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.btn-load:hover { background: var(--primary-hover); }
+
+.btn-delete {
+  padding: 0.3rem 0.6rem;
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+  transition: color 0.15s, border-color 0.15s;
+}
+.btn-delete:hover { color: var(--danger); border-color: var(--danger); }

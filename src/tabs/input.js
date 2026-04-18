@@ -8,24 +8,48 @@ import { state } from '../state.js'
 import { switchTab, enableTab } from '../ui/tabs.js'
 
 const DELHI = { displayName: 'New Delhi, India', lat: 28.6139, lon: 77.209, timezone: 'Asia/Kolkata' }
+const STORAGE_KEY = 'hora-prakash-profiles'
 
 let selectedLocation = null
 let autocompleteTimeout = null
 
-function todayStr() {
-  return new Date().toISOString().slice(0, 10)
+// ── LocalStorage helpers ──────────────────────────────────────────────────────
+
+function loadProfiles() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') } catch { return [] }
 }
+
+function saveProfiles(profiles) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles))
+}
+
+function saveProfile(profile) {
+  const profiles = loadProfiles()
+  const existing = profiles.findIndex(p => p.id === profile.id)
+  if (existing >= 0) profiles[existing] = profile
+  else profiles.unshift(profile)
+  saveProfiles(profiles)
+}
+
+function deleteProfile(id) {
+  saveProfiles(loadProfiles().filter(p => p.id !== id))
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function todayStr() { return new Date().toISOString().slice(0, 10) }
 
 function nowTimeStr() {
   const d = new Date()
-  const hh = String(d.getHours()).padStart(2, '0')
-  const mm = String(d.getMinutes()).padStart(2, '0')
-  return `${hh}:${mm}`
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
 }
+
+// ── Render ────────────────────────────────────────────────────────────────────
 
 export function renderInputTab() {
   const panel = document.getElementById('tab-input')
   panel.innerHTML = `
+    <div id="saved-profiles-section"></div>
     <div class="card">
       <form id="birth-form">
         <div class="form-group">
@@ -59,30 +83,114 @@ export function renderInputTab() {
             <input type="text" id="inp-tz" value="${DELHI.timezone}" readonly />
           </div>
         </div>
-        <button type="submit" id="btn-calculate">Calculate Chart</button>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">
+          <button type="submit" id="btn-calculate">Calculate Chart</button>
+          <button type="button" id="btn-save-profile" class="btn-secondary">Save Profile</button>
+        </div>
         <p id="calc-error" class="error"></p>
       </form>
     </div>
   `
 
   selectedLocation = { ...DELHI }
+  renderSavedProfiles()
 
   document.getElementById('inp-location').addEventListener('input', onLocationInput)
   document.getElementById('birth-form').addEventListener('submit', onFormSubmit)
   document.getElementById('location-suggestions').addEventListener('click', onSuggestionClick)
+  document.getElementById('btn-save-profile').addEventListener('click', onSaveProfile)
 }
+
+function renderSavedProfiles() {
+  const section = document.getElementById('saved-profiles-section')
+  const profiles = loadProfiles()
+  if (profiles.length === 0) { section.innerHTML = ''; return }
+
+  section.innerHTML = `
+    <div class="card" style="margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+        <h3 style="margin:0">Saved Profiles</h3>
+        <button type="button" id="btn-clear-all" class="btn-danger-sm">Clear All</button>
+      </div>
+      <div class="profiles-list">
+        ${profiles.map(p => `
+          <div class="profile-item" data-id="${escapeAttr(p.id)}">
+            <div class="profile-info">
+              <span class="profile-name">${escapeHtml(p.name)}</span>
+              <span class="profile-meta">${p.dob} · ${p.tob} · ${escapeHtml(p.location || p.lat + '°, ' + p.lon + '°')}</span>
+            </div>
+            <div class="profile-actions">
+              <button type="button" class="btn-load" data-id="${escapeAttr(p.id)}">Load</button>
+              <button type="button" class="btn-delete" data-id="${escapeAttr(p.id)}">✕</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `
+
+  section.querySelector('#btn-clear-all').addEventListener('click', () => {
+    if (confirm('Delete all saved profiles?')) { saveProfiles([]); renderSavedProfiles() }
+  })
+
+  section.querySelectorAll('.btn-load').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const profile = loadProfiles().find(p => p.id === btn.dataset.id)
+      if (profile) fillForm(profile)
+    })
+  })
+
+  section.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      deleteProfile(btn.dataset.id)
+      renderSavedProfiles()
+    })
+  })
+}
+
+function fillForm(p) {
+  document.getElementById('inp-name').value     = p.name
+  document.getElementById('inp-dob').value      = p.dob
+  document.getElementById('inp-tob').value      = p.tob
+  document.getElementById('inp-location').value = p.location || ''
+  document.getElementById('inp-lat').value      = p.lat
+  document.getElementById('inp-lon').value      = p.lon
+  document.getElementById('inp-tz').value       = p.timezone
+  selectedLocation = { displayName: p.location, lat: p.lat, lon: p.lon, timezone: p.timezone }
+}
+
+function onSaveProfile() {
+  const name     = document.getElementById('inp-name').value.trim()
+  const dob      = document.getElementById('inp-dob').value
+  const tob      = document.getElementById('inp-tob').value
+  const lat      = Math.round(parseFloat(document.getElementById('inp-lat').value) * 10000) / 10000
+  const lon      = Math.round(parseFloat(document.getElementById('inp-lon').value) * 10000) / 10000
+  const timezone = document.getElementById('inp-tz').value.trim()
+  const location = document.getElementById('inp-location').value.trim()
+
+  if (!name || !dob || !tob || !timezone) {
+    document.getElementById('calc-error').textContent = 'Fill Name, Date, Time and Location before saving.'
+    return
+  }
+
+  // Use name+dob as a stable ID so re-saving the same person updates instead of duplicates
+  const id = `${name.toLowerCase().replace(/\s+/g, '-')}-${dob}`
+  saveProfile({ id, name, dob, tob, lat, lon, timezone, location, savedAt: new Date().toISOString() })
+  renderSavedProfiles()
+
+  const btn = document.getElementById('btn-save-profile')
+  btn.textContent = 'Saved ✓'
+  setTimeout(() => { btn.textContent = 'Save Profile' }, 1500)
+}
+
+// ── Location autocomplete ─────────────────────────────────────────────────────
 
 async function onLocationInput(e) {
   clearTimeout(autocompleteTimeout)
   const q = e.target.value
   if (q.length < 3) { clearSuggestions(); return }
   autocompleteTimeout = setTimeout(async () => {
-    try {
-      const results = await searchLocation(q)
-      renderSuggestions(results)
-    } catch (err) {
-      clearSuggestions()
-    }
+    try { renderSuggestions(await searchLocation(q)) } catch { clearSuggestions() }
   }, 400)
 }
 
@@ -111,10 +219,12 @@ async function onSuggestionClick(e) {
     document.getElementById('inp-lon').value = Math.round(lon * 10000) / 10000
     document.getElementById('inp-tz').value = tz
     clearSuggestions()
-  } catch (err) {
+  } catch {
     document.getElementById('calc-error').textContent = 'Could not fetch timezone. Please try again.'
   }
 }
+
+// ── Form submit ───────────────────────────────────────────────────────────────
 
 async function onFormSubmit(e) {
   e.preventDefault()
@@ -131,25 +241,19 @@ async function onFormSubmit(e) {
     errEl.textContent = 'Please fill Name, Date, Time and select a location.'
     return
   }
-  if (isNaN(lat) || lat < -90 || lat > 90) {
-    errEl.textContent = 'Latitude must be between -90 and 90.'
-    return
-  }
-  if (isNaN(lon) || lon < -180 || lon > 180) {
-    errEl.textContent = 'Longitude must be between -180 and 180.'
-    return
-  }
+  if (isNaN(lat) || lat < -90 || lat > 90) { errEl.textContent = 'Latitude must be between -90 and 90.'; return }
+  if (isNaN(lon) || lon < -180 || lon > 180) { errEl.textContent = 'Longitude must be between -180 and 180.'; return }
 
   const btn = document.getElementById('btn-calculate')
   try {
     btn.disabled = true
-    btn.textContent = 'Calculating...'
+    btn.textContent = 'Calculating…'
 
     const jd = toJulianDay(dob, tob, tz)
     const { planets, lagna, houses } = calcBirthChart(jd, lat, lon)
     const moon = planets.find(p => p.name === 'Moon')
     if (!moon) throw new Error('Moon position could not be calculated.')
-    const dasha = calcDasha(moon, dob)
+    const dasha   = calcDasha(moon, dob)
     const panchang = calcPanchang(jd, lat, lon)
 
     state.birth    = { name, dob, tob, lat, lon, timezone: tz, location: selectedLocation?.displayName ?? '' }
@@ -163,13 +267,8 @@ async function onFormSubmit(e) {
     const { renderDasha }    = await import('./dasha.js')
     const { renderPanchang } = await import('./panchang.js')
 
-    renderChart()
-    renderDasha()
-    renderPanchang()
-
-    enableTab('chart')
-    enableTab('dasha')
-    enableTab('panchang')
+    renderChart(); renderDasha(); renderPanchang()
+    enableTab('chart'); enableTab('dasha'); enableTab('panchang')
     switchTab('chart')
   } catch (err) {
     errEl.textContent = `Calculation error: ${err.message}`
@@ -179,6 +278,8 @@ async function onFormSubmit(e) {
     btn.textContent = 'Calculate Chart'
   }
 }
+
+// ── Utils ─────────────────────────────────────────────────────────────────────
 
 function escapeHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
