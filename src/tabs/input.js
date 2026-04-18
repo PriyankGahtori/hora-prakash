@@ -7,8 +7,21 @@ import { calcPanchang } from '../core/panchang.js'
 import { state } from '../state.js'
 import { switchTab, enableTab } from '../ui/tabs.js'
 
+const DELHI = { displayName: 'New Delhi, India', lat: 28.6139, lon: 77.209, timezone: 'Asia/Kolkata' }
+
 let selectedLocation = null
 let autocompleteTimeout = null
+
+function todayStr() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function nowTimeStr() {
+  const d = new Date()
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mm = String(d.getMinutes()).padStart(2, '0')
+  return `${hh}:${mm}`
+}
 
 export function renderInputTab() {
   const panel = document.getElementById('tab-input')
@@ -21,29 +34,29 @@ export function renderInputTab() {
         </div>
         <div class="form-group">
           <label>Date of Birth</label>
-          <input type="date" id="inp-dob" required />
+          <input type="date" id="inp-dob" required value="${todayStr()}" />
         </div>
         <div class="form-group">
           <label>Time of Birth</label>
-          <input type="time" id="inp-tob" required />
+          <input type="time" id="inp-tob" required value="${nowTimeStr()}" />
         </div>
         <div class="form-group">
           <label>Birth Location</label>
-          <input type="text" id="inp-location" required placeholder="Type city name…" autocomplete="off" />
+          <input type="text" id="inp-location" required placeholder="Type city name…" autocomplete="off" value="${DELHI.displayName}" />
           <ul id="location-suggestions"></ul>
         </div>
         <div class="form-group coords-row">
           <div>
             <label>Latitude</label>
-            <input type="number" id="inp-lat" step="0.0001" placeholder="e.g. 19.0760" />
+            <input type="number" id="inp-lat" step="0.0001" value="${DELHI.lat}" />
           </div>
           <div>
             <label>Longitude</label>
-            <input type="number" id="inp-lon" step="0.0001" placeholder="e.g. 72.8777" />
+            <input type="number" id="inp-lon" step="0.0001" value="${DELHI.lon}" />
           </div>
           <div>
             <label>Timezone</label>
-            <input type="text" id="inp-tz" placeholder="e.g. Asia/Kolkata" readonly />
+            <input type="text" id="inp-tz" value="${DELHI.timezone}" readonly />
           </div>
         </div>
         <button type="submit" id="btn-calculate">Calculate Chart</button>
@@ -51,6 +64,8 @@ export function renderInputTab() {
       </form>
     </div>
   `
+
+  selectedLocation = { ...DELHI }
 
   document.getElementById('inp-location').addEventListener('input', onLocationInput)
   document.getElementById('birth-form').addEventListener('submit', onFormSubmit)
@@ -112,8 +127,8 @@ async function onFormSubmit(e) {
   const lon  = Math.round(parseFloat(document.getElementById('inp-lon').value) * 10000) / 10000
   const tz   = document.getElementById('inp-tz').value.trim()
 
-  if (!name || !dob || !tob || isNaN(lat) || isNaN(lon) || !tz) {
-    errEl.textContent = 'Please fill all fields and select a location from the suggestions.'
+  if (!name || !dob || !tob || !tz) {
+    errEl.textContent = 'Please fill Name, Date, Time and select a location.'
     return
   }
 
@@ -136,9 +151,8 @@ async function onFormSubmit(e) {
     state.dasha    = dasha
     state.panchang = panchang
 
-    // Lazily import render functions to avoid circular deps at load time
-    const { renderChart }   = await import('./chart.js')
-    const { renderDasha }   = await import('./dasha.js')
+    const { renderChart }    = await import('./chart.js')
+    const { renderDasha }    = await import('./dasha.js')
     const { renderPanchang } = await import('./panchang.js')
 
     renderChart()
