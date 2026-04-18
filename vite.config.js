@@ -1,6 +1,6 @@
 // vite.config.js
 export default {
-  base: '/aditya-amrit-hora/',
+  base: '/hora-prakash/',
   build: { outDir: 'dist' },
   assetsInclude: ['**/*.wasm', '**/*.data'],
   optimizeDeps: {
