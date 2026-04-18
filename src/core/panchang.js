@@ -47,9 +47,9 @@ export function calcPanchang(jd, lat, lon) {
   const swe = getSwe()
 
   // Use tropical longitudes for tithi/yoga (standard Vedic panchang practice)
-  const SPEED_FLAG = 256  // SEFLG_SPEED only, tropical
-  const sunResult  = swe.calc_ut(jd, 0, SPEED_FLAG)
-  const moonResult = swe.calc_ut(jd, 1, SPEED_FLAG)
+  const TROPICAL_SPEED_FLAG = 2 | 256   // SEFLG_SWIEPH | SEFLG_SPEED
+  const sunResult  = swe.calc_ut(jd, 0, TROPICAL_SPEED_FLAG)
+  const moonResult = swe.calc_ut(jd, 1, TROPICAL_SPEED_FLAG)
   const sunLon  = sunResult[0]
   const moonLon = moonResult[0]
 
@@ -72,16 +72,24 @@ export function calcPanchang(jd, lat, lon) {
   const vara = VARA_NAMES[date.getUTCDay()]
 
   // Nakshatra: sidereal Moon longitude
-  const sidMoonResult = swe.calc_ut(jd, 1, 65536 + 256)  // SEFLG_SIDEREAL | SEFLG_SPEED
+  const sidMoonResult = swe.calc_ut(jd, 1, 2 | 65536 | 256)  // SEFLG_SWIEPH | SEFLG_SIDEREAL | SEFLG_SPEED
   const nakshatra = getNakshatraInfo(sidMoonResult[0])
 
   // Yoga: (Sun + Moon tropical) / (360/27)
   const yogaVal = ((sunLon + moonLon) % 360) / (360 / 27)
   const yogaName = YOGA_NAMES[Math.floor(yogaVal)]
 
-  // Karana: each karana = 6° of Moon-Sun diff
-  const karanaNum = Math.floor(diff / 6)
-  const karanaName = KARANA_NAMES[karanaNum % 11]
+  // Karana: 60-karana cycle — position 0 = Kimstughna (fixed),
+  // positions 1-56 = 7 moveable karanas cycling, positions 57-59 = Shakuni/Chatushpada/Naga (fixed)
+  const karanaNum = Math.floor(diff / 6)  // 0-59
+  let karanaName
+  if (karanaNum === 0) {
+    karanaName = 'Kimstughna'
+  } else if (karanaNum >= 57) {
+    karanaName = ['Shakuni','Chatushpada','Naga'][karanaNum - 57]
+  } else {
+    karanaName = KARANA_NAMES[(karanaNum - 1) % 7]
+  }
 
   // Sunrise and Sunset via rise_trans
   // Search from start of the JD day (midnight UT of that day)
