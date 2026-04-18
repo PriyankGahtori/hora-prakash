@@ -30,7 +30,7 @@ export function renderInputTab() {
       <form id="birth-form">
         <div class="form-group">
           <label>Name</label>
-          <input type="text" id="inp-name" required placeholder="Full name" />
+          <input type="text" id="inp-name" required placeholder="Full name" value="Unknown" />
         </div>
         <div class="form-group">
           <label>Date of Birth</label>
@@ -129,6 +129,14 @@ async function onFormSubmit(e) {
 
   if (!name || !dob || !tob || !tz) {
     errEl.textContent = 'Please fill Name, Date, Time and select a location.'
+    return
+  }
+  if (isNaN(lat) || lat < -90 || lat > 90) {
+    errEl.textContent = 'Latitude must be between -90 and 90.'
+    return
+  }
+  if (isNaN(lon) || lon < -180 || lon > 180) {
+    errEl.textContent = 'Longitude must be between -180 and 180.'
     return
   }
 
