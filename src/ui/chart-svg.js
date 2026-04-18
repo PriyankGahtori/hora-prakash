@@ -46,15 +46,35 @@ function centroid(poly) {
   return [x * S, y * S]
 }
 
-function planetLines(ps, cx, cy) {
-  const lineH = 22
+function bbox(poly) {
+  return {
+    minX: Math.min(...poly.map(p => p[0])) * S,
+    minY: Math.min(...poly.map(p => p[1])) * S,
+    maxX: Math.max(...poly.map(p => p[0])) * S,
+    maxY: Math.max(...poly.map(p => p[1])) * S,
+  }
+}
+
+// Place planets in available area, scaling font to avoid overflow
+function placePlanets(ps, cx, areaTop, areaBottom) {
+  if (ps.length === 0) return ''
+  const areaH = areaBottom - areaTop
+  const maxFont = 17
+  const minFont = 11
+  // Fit all planets with a minimum gap of 3px
+  const lineH = Math.max(minFont + 3, Math.min(maxFont + 4, areaH / ps.length))
+  const fontSize = Math.round(Math.min(maxFont, lineH - 3))
+  const blockH = (ps.length - 1) * lineH
+  // Baseline of first line: center block in area
+  const firstY = areaTop + (areaH - blockH) / 2 + fontSize * 0.36
+
   return ps.map((p, i) => {
     const deg = typeof p.degree === 'number' ? p.degree.toFixed(0) + '°' : ''
     const r   = p.retrograde ? 'ᴿ' : ''
     const label = `${p.abbr}${r} ${deg}`
     const color  = p.isLagna ? '#c2410c' : '#1e293b'
     const weight = p.isLagna ? '700' : '500'
-    return `<text x="${cx}" y="${cy + i * lineH}" text-anchor="middle" font-size="18" fill="${color}" font-weight="${weight}" ${FONT}>${label}</text>`
+    return `<text x="${cx.toFixed(1)}" y="${(firstY + i * lineH).toFixed(1)}" text-anchor="middle" font-size="${fontSize}" fill="${color}" font-weight="${weight}" ${FONT}>${label}</text>`
   }).join('\n')
 }
 
@@ -84,13 +104,20 @@ export function renderNorthIndianSVG(planets, lagna) {
   for (let cell = 1; cell <= 12; cell++) {
     const poly = NI_POLYS[cell]
     parts.push(`<polygon points="${toPts(poly)}" fill="none" stroke="#94a3b8" stroke-width="1.2"/>`)
-    const [cx, cy] = centroid(poly)
+
+    const { minX, minY, maxX, maxY } = bbox(poly)
+    const cx = (minX + maxX) / 2
+
+    // Sign abbr anchored to top of polygon
+    const signFontSize = 14
+    const signY = minY + signFontSize + 2
     const sign = cellToSign[cell]
-    parts.push(`<text x="${cx}" y="${cy - 16}" text-anchor="middle" font-size="16" font-weight="600" fill="#64748b" ${FONT}>${SIGN_ABBR[sign - 1]}</text>`)
-    // shift planet block down from sign label
-    const count = cellPlanets[cell].length
-    const blockTop = cy + (count > 1 ? -(count - 1) * 11 : 4)
-    parts.push(planetLines(cellPlanets[cell], cx, blockTop))
+    parts.push(`<text x="${cx.toFixed(1)}" y="${signY.toFixed(1)}" text-anchor="middle" font-size="${signFontSize}" font-weight="600" fill="#64748b" ${FONT}>${SIGN_ABBR[sign - 1]}</text>`)
+
+    // Planets fill remaining area below sign label
+    const planetAreaTop = signY + 4
+    const planetAreaBottom = maxY - 4
+    parts.push(placePlanets(cellPlanets[cell], cx, planetAreaTop, planetAreaBottom))
   }
 
   parts.push('</svg>')
@@ -99,7 +126,7 @@ export function renderNorthIndianSVG(planets, lagna) {
 
 export function renderSouthIndianSVG(planets, lagna) {
   const lagnaSign = lagna.sign
-  const cs = S / 4
+  const cs = S / 4  // 120px per cell
 
   const signPlanets = {}
   for (let s = 1; s <= 12; s++) signPlanets[s] = []
@@ -120,21 +147,18 @@ export function renderSouthIndianSVG(planets, lagna) {
     const isLagnaCell = sign === lagnaSign
 
     parts.push(`<rect x="${x}" y="${y}" width="${cs}" height="${cs}" fill="${isLagnaCell ? '#fff7ed' : '#fafafa'}" stroke="#94a3b8" stroke-width="1.2"/>`)
-    parts.push(`<text x="${x + 6}" y="${y + 20}" font-size="16" font-weight="600" fill="#475569" ${FONT}>${SIGN_ABBR[sign - 1]}</text>`)
-    parts.push(`<text x="${x + cs - 6}" y="${y + 20}" text-anchor="end" font-size="16" font-weight="600" fill="${isLagnaCell ? '#c2410c' : '#94a3b8'}" ${FONT}>${house}</text>`)
 
-    const ps = signPlanets[sign] || []
-    const lineH = 22
+    // Sign abbr top-left, house number top-right — fixed header row height = 24px
+    const headerH = 24
+    parts.push(`<text x="${x + 5}" y="${y + headerH - 4}" font-size="14" font-weight="600" fill="#475569" ${FONT}>${SIGN_ABBR[sign - 1]}</text>`)
+    parts.push(`<text x="${x + cs - 5}" y="${y + headerH - 4}" text-anchor="end" font-size="14" font-weight="600" fill="${isLagnaCell ? '#c2410c' : '#94a3b8'}" ${FONT}>${house}</text>`)
+
+    // Separator line below header
+    parts.push(`<line x1="${x + 2}" y1="${y + headerH}" x2="${x + cs - 2}" y2="${y + headerH}" stroke="#e2e8f0" stroke-width="0.8"/>`)
+
+    // Planets fill the area below the header
     const cx = x + cs / 2
-    const cy = y + cs / 2 - ((ps.length - 1) * lineH / 2) + 6
-    ps.forEach((p, i) => {
-      const deg = typeof p.degree === 'number' ? p.degree.toFixed(0) + '°' : ''
-      const r   = p.retrograde ? 'ᴿ' : ''
-      const label = `${p.abbr}${r} ${deg}`
-      const color  = p.isLagna ? '#c2410c' : '#1e293b'
-      const weight = p.isLagna ? '700' : '500'
-      parts.push(`<text x="${cx}" y="${cy + i * lineH}" text-anchor="middle" font-size="18" fill="${color}" font-weight="${weight}" ${FONT}>${label}</text>`)
-    })
+    parts.push(placePlanets(signPlanets[sign] || [], cx, y + headerH + 2, y + cs - 4))
   }
 
   parts.push('</svg>')
