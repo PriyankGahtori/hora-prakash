@@ -1,42 +1,40 @@
 // src/ui/chart-svg.js
 // Reference: https://github.com/VicharaVandana/jyotichart
 
-const S = 400
+const S = 480
+const FONT = `font-family="Inter, system-ui, sans-serif"`
 
 // North Indian chart — houses go counter-clockwise from top center.
 // Angular houses (1,4,7,10) are diamonds; others are triangles.
-// Normalized 0-1 coords derived from jyotichart reference (420px, range 10-410).
 const NI_POLYS = {
-  1:  [[1/2,0],[1/4,1/4],[1/2,1/2],[3/4,1/4]],         // top diamond
-  2:  [[0,0],[1/2,0],[1/4,1/4]],                         // top-left triangle
-  3:  [[0,0],[0,1/2],[1/4,1/4]],                         // left-upper triangle
-  4:  [[1/4,1/4],[0,1/2],[1/4,3/4],[1/2,1/2]],          // left diamond
-  5:  [[0,1/2],[1/4,3/4],[0,1]],                         // left-lower triangle
-  6:  [[1/2,1],[1/4,3/4],[0,1]],                         // bottom-left triangle
-  7:  [[1/2,1],[1/4,3/4],[1/2,1/2],[3/4,3/4]],          // bottom diamond
-  8:  [[1/2,1],[3/4,3/4],[1,1]],                         // bottom-right triangle
-  9:  [[3/4,3/4],[1,1],[1,1/2]],                         // right-lower triangle
-  10: [[3/4,3/4],[1,1/2],[3/4,1/4],[1/2,1/2]],          // right diamond
-  11: [[1,1/2],[3/4,1/4],[1,0]],                         // right-upper triangle
-  12: [[3/4,1/4],[1,0],[1/2,0]],                         // top-right triangle
+  1:  [[1/2,0],[1/4,1/4],[1/2,1/2],[3/4,1/4]],
+  2:  [[0,0],[1/2,0],[1/4,1/4]],
+  3:  [[0,0],[0,1/2],[1/4,1/4]],
+  4:  [[1/4,1/4],[0,1/2],[1/4,3/4],[1/2,1/2]],
+  5:  [[0,1/2],[1/4,3/4],[0,1]],
+  6:  [[1/2,1],[1/4,3/4],[0,1]],
+  7:  [[1/2,1],[1/4,3/4],[1/2,1/2],[3/4,3/4]],
+  8:  [[1/2,1],[3/4,3/4],[1,1]],
+  9:  [[3/4,3/4],[1,1],[1,1/2]],
+  10: [[3/4,3/4],[1,1/2],[3/4,1/4],[1/2,1/2]],
+  11: [[1,1/2],[3/4,1/4],[1,0]],
+  12: [[3/4,1/4],[1,0],[1/2,0]],
 }
 
 // South Indian chart — signs FIXED, lagna rotates.
-// 4×4 grid, outer 12 cells = signs, center 2×2 = chart title.
-// Signs clockwise from top-left: Pi→Ar→Ta→Ge→Ca→Le→Vi→Li→Sc→Sg→Cp→Aq
 const SI_CELLS = [
-  { sign: 12, col: 0, row: 0 }, // Pisces
-  { sign: 1,  col: 1, row: 0 }, // Aries
-  { sign: 2,  col: 2, row: 0 }, // Taurus
-  { sign: 3,  col: 3, row: 0 }, // Gemini
-  { sign: 4,  col: 3, row: 1 }, // Cancer
-  { sign: 5,  col: 3, row: 2 }, // Leo
-  { sign: 6,  col: 3, row: 3 }, // Virgo
-  { sign: 7,  col: 2, row: 3 }, // Libra
-  { sign: 8,  col: 1, row: 3 }, // Scorpio
-  { sign: 9,  col: 0, row: 3 }, // Sagittarius
-  { sign: 10, col: 0, row: 2 }, // Capricorn
-  { sign: 11, col: 0, row: 1 }, // Aquarius
+  { sign: 12, col: 0, row: 0 },
+  { sign: 1,  col: 1, row: 0 },
+  { sign: 2,  col: 2, row: 0 },
+  { sign: 3,  col: 3, row: 0 },
+  { sign: 4,  col: 3, row: 1 },
+  { sign: 5,  col: 3, row: 2 },
+  { sign: 6,  col: 3, row: 3 },
+  { sign: 7,  col: 2, row: 3 },
+  { sign: 8,  col: 1, row: 3 },
+  { sign: 9,  col: 0, row: 3 },
+  { sign: 10, col: 0, row: 2 },
+  { sign: 11, col: 0, row: 1 },
 ]
 
 const SIGN_ABBR = ['Ar','Ta','Ge','Ca','Le','Vi','Li','Sc','Sg','Cp','Aq','Pi']
@@ -54,11 +52,11 @@ function centroid(poly) {
 function planetLines(ps, cx, cy) {
   return ps.map((p, i) => {
     const deg = typeof p.degree === 'number' ? p.degree.toFixed(0) + '°' : ''
-    const r   = p.retrograde ? 'R' : ''
+    const r   = p.retrograde ? 'ᴿ' : ''
     const label = `${p.abbr}${r} ${deg}`
-    const color = p.isLagna ? '#c00' : '#111'
-    const weight = p.isLagna ? 'bold' : 'normal'
-    return `<text x="${cx}" y="${cy + 4 + i * 14}" text-anchor="middle" font-size="12" fill="${color}" font-weight="${weight}">${label}</text>`
+    const color  = p.isLagna ? '#c2410c' : '#1e293b'
+    const weight = p.isLagna ? '700' : '500'
+    return `<text x="${cx}" y="${cy + 4 + i * 16}" text-anchor="middle" font-size="13" fill="${color}" font-weight="${weight}" ${FONT}>${label}</text>`
   }).join('\n')
 }
 
@@ -82,15 +80,16 @@ export function renderNorthIndianSVG(planets, lagna) {
 
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S} ${S}" style="width:100%;max-width:${S}px">`,
-    `<rect width="${S}" height="${S}" fill="white" stroke="#333" stroke-width="1.5"/>`,
+    `<rect width="${S}" height="${S}" fill="#fafafa" stroke="#334155" stroke-width="2" rx="4"/>`,
   ]
 
   for (let cell = 1; cell <= 12; cell++) {
     const poly = NI_POLYS[cell]
-    parts.push(`<polygon points="${toPts(poly)}" fill="none" stroke="#555" stroke-width="1"/>`)
+    parts.push(`<polygon points="${toPts(poly)}" fill="none" stroke="#94a3b8" stroke-width="1.2"/>`)
     const [cx, cy] = centroid(poly)
     const sign = cellToSign[cell]
-    parts.push(`<text x="${cx}" y="${cy - 10}" text-anchor="middle" font-size="10" fill="#aaa">${SIGN_ABBR[sign - 1]}</text>`)
+    // sign label — larger, clear slate color
+    parts.push(`<text x="${cx}" y="${cy - 12}" text-anchor="middle" font-size="12" font-weight="600" fill="#64748b" ${FONT}>${SIGN_ABBR[sign - 1]}</text>`)
     parts.push(planetLines(cellPlanets[cell], cx, cy))
   }
 
@@ -100,9 +99,8 @@ export function renderNorthIndianSVG(planets, lagna) {
 
 export function renderSouthIndianSVG(planets, lagna) {
   const lagnaSign = lagna.sign
-  const cell = S / 4  // cell size
+  const cs = S / 4  // cell size
 
-  // Build sign → planet list
   const signPlanets = {}
   for (let s = 1; s <= 12; s++) signPlanets[s] = []
   signPlanets[lagnaSign].push({ abbr: 'Asc', degree: lagna.degree, retrograde: false, isLagna: true })
@@ -110,36 +108,36 @@ export function renderSouthIndianSVG(planets, lagna) {
 
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S} ${S}" style="width:100%;max-width:${S}px">`,
-    `<rect width="${S}" height="${S}" fill="white" stroke="#333" stroke-width="1.5"/>`,
+    `<rect width="${S}" height="${S}" fill="#fafafa" stroke="#334155" stroke-width="2" rx="4"/>`,
     // center box
-    `<rect x="${cell}" y="${cell}" width="${cell * 2}" height="${cell * 2}" fill="#f9f9f9" stroke="#ccc" stroke-width="1"/>`,
-    `<text x="${S/2}" y="${S/2 - 6}" text-anchor="middle" font-size="15" font-weight="600" fill="#4f46e5">Rashi</text>`,
-    `<text x="${S/2}" y="${S/2 + 14}" text-anchor="middle" font-size="15" font-weight="600" fill="#4f46e5">Chart</text>`,
+    `<rect x="${cs}" y="${cs}" width="${cs * 2}" height="${cs * 2}" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.5"/>`,
+    `<text x="${S/2}" y="${S/2 - 8}" text-anchor="middle" font-size="17" font-weight="700" fill="#4f46e5" ${FONT}>Rashi</text>`,
+    `<text x="${S/2}" y="${S/2 + 14}" text-anchor="middle" font-size="17" font-weight="700" fill="#4f46e5" ${FONT}>Chart</text>`,
   ]
 
   for (const { sign, col, row } of SI_CELLS) {
-    const x = col * cell, y = row * cell
-    // house number from lagna
+    const x = col * cs, y = row * cs
     const house = ((sign - lagnaSign + 12) % 12) + 1
     const isLagnaCell = sign === lagnaSign
 
-    parts.push(`<rect x="${x}" y="${y}" width="${cell}" height="${cell}" fill="${isLagnaCell ? '#fff8f0' : 'white'}" stroke="#555" stroke-width="1"/>`)
+    parts.push(`<rect x="${x}" y="${y}" width="${cs}" height="${cs}" fill="${isLagnaCell ? '#fff7ed' : '#fafafa'}" stroke="#94a3b8" stroke-width="1.2"/>`)
 
-    // sign label top-left
-    parts.push(`<text x="${x + 4}" y="${y + 15}" font-size="11" fill="#aaa">${SIGN_ABBR[sign - 1]}</text>`)
+    // sign label top-left — clear, readable
+    parts.push(`<text x="${x + 5}" y="${y + 17}" font-size="13" font-weight="600" fill="#475569" ${FONT}>${SIGN_ABBR[sign - 1]}</text>`)
     // house number top-right
-    parts.push(`<text x="${x + cell - 4}" y="${y + 15}" text-anchor="end" font-size="11" fill="${isLagnaCell ? '#c00' : '#bbb'}">${house}</text>`)
+    parts.push(`<text x="${x + cs - 5}" y="${y + 17}" text-anchor="end" font-size="13" font-weight="600" fill="${isLagnaCell ? '#c2410c' : '#94a3b8'}" ${FONT}>${house}</text>`)
 
     // planets
     const ps = signPlanets[sign] || []
-    const cx = x + cell / 2, cy = y + cell / 2 - ((ps.length - 1) * 6)
+    const cx = x + cs / 2
+    const cy = y + cs / 2 - ((ps.length - 1) * 8)
     ps.forEach((p, i) => {
       const deg = typeof p.degree === 'number' ? p.degree.toFixed(0) + '°' : ''
-      const r   = p.retrograde ? 'R' : ''
+      const r   = p.retrograde ? 'ᴿ' : ''
       const label = `${p.abbr}${r} ${deg}`
-      const color = p.isLagna ? '#c00' : '#111'
-      const weight = p.isLagna ? 'bold' : 'normal'
-      parts.push(`<text x="${cx}" y="${cy + i * 14}" text-anchor="middle" font-size="12" fill="${color}" font-weight="${weight}">${label}</text>`)
+      const color  = p.isLagna ? '#c2410c' : '#1e293b'
+      const weight = p.isLagna ? '700' : '500'
+      parts.push(`<text x="${cx}" y="${cy + i * 16}" text-anchor="middle" font-size="13" fill="${color}" font-weight="${weight}" ${FONT}>${label}</text>`)
     })
   }
 
@@ -147,7 +145,6 @@ export function renderSouthIndianSVG(planets, lagna) {
   return parts.join('\n')
 }
 
-// Keep backward-compat export used by chart.js
 export function renderChartSVG(planets, lagna, style = 'north') {
   return style === 'south'
     ? renderSouthIndianSVG(planets, lagna)
