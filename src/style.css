@@ -1,34 +1,264 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-text: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --danger: #ef4444;
+  --highlight: #fef9c3;
+  --radius: 10px;
+  --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 1rem; }
-header { margin-bottom: 1rem; }
-h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
-nav { display: flex; gap: 0.5rem; }
-.tab-btn { padding: 0.4rem 1rem; cursor: pointer; border: 1px solid #ccc; background: #f5f5f5; border-radius: 4px; }
-.tab-btn.active { background: #333; color: #fff; border-color: #333; }
-.tab-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  font-size: 0.95rem;
+}
+
+/* ── Header ── */
+header {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+/* ── Tabs ── */
+nav { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.tab-btn {
+  padding: 0.4rem 1.1rem;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.tab-btn:hover:not(:disabled) { background: #f1f5f9; color: var(--text); }
+.tab-btn.active { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
+.tab-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+/* ── Tab panels ── */
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.25rem; }
-.form-group input { width: 100%; padding: 0.4rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+
+/* ── Card wrapper ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Form ── */
+.form-group { margin-bottom: 1.1rem; }
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: #f8fafc;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+.form-group input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+  background: #fff;
+}
+
 .coords-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-#location-suggestions { list-style: none; border: 1px solid #ccc; border-top: none; max-height: 200px; overflow-y: auto; }
-#location-suggestions li { padding: 0.4rem; cursor: pointer; font-size: 0.9rem; }
-#location-suggestions li:hover { background: #eee; }
-#btn-calculate { padding: 0.5rem 1.5rem; background: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
-#btn-calculate:disabled { opacity: 0.6; cursor: not-allowed; }
-.error { color: red; margin-top: 0.5rem; font-size: 0.9rem; }
-.dasha-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-.dasha-table th, .dasha-table td { border: 1px solid #ddd; padding: 0.3rem 0.6rem; }
-.dasha-table thead { background: #f0f0f0; }
-.current-period { background: #fffbe6; font-weight: bold; }
-.panchang-table { border-collapse: collapse; min-width: 400px; font-size: 0.95rem; }
-.panchang-table th, .panchang-table td { border: 1px solid #ddd; padding: 0.4rem 0.8rem; }
-.panchang-table th { background: #f5f5f5; text-align: right; width: 140px; }
-h2, h3 { margin: 1rem 0 0.5rem; }
-.planet-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
-.planet-table th, .planet-table td { border: 1px solid #ddd; padding: 0.3rem 0.5rem; text-align: left; }
-.planet-table thead { background: #f0f0f0; }
-#chart-container { max-width: 420px; margin: 0 auto 1.5rem; }
-.chart-style-btn { padding: 0.3rem 0.9rem; cursor: pointer; border: 1px solid #ccc; background: #f5f5f5; border-radius: 4px; font-size: 0.9rem; margin-right: 0.4rem; }
-.chart-style-btn.active { background: #333; color: #fff; border-color: #333; }
+
+/* ── Location suggestions ── */
+#location-suggestions {
+  list-style: none;
+  border: 1.5px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 7px 7px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  position: relative;
+  z-index: 10;
+}
+#location-suggestions li {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text);
+  transition: background 0.1s;
+}
+#location-suggestions li:hover { background: #f1f5f9; }
+
+/* ── Buttons ── */
+#btn-calculate {
+  padding: 0.6rem 2rem;
+  background: var(--primary);
+  color: var(--primary-text);
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 0.15s, transform 0.1s;
+  margin-top: 0.25rem;
+}
+#btn-calculate:hover:not(:disabled) { background: var(--primary-hover); }
+#btn-calculate:active:not(:disabled) { transform: scale(0.98); }
+#btn-calculate:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.error { color: var(--danger); margin-top: 0.6rem; font-size: 0.88rem; }
+
+/* ── Section headings ── */
+h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.25rem;
+}
+h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 1.25rem 0 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Chart area ── */
+#chart-container { max-width: 440px; margin: 0 auto 1.5rem; }
+
+.chart-style-btn {
+  padding: 0.35rem 1rem;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  font-family: inherit;
+  margin-right: 0.4rem;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.chart-style-btn:hover { background: #f1f5f9; color: var(--text); }
+.chart-style-btn.active { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
+
+/* ── Planet table ── */
+.planet-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  font-size: 0.88rem;
+}
+.planet-table th {
+  background: #f1f5f9;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+.planet-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.planet-table tbody tr:hover { background: #f8fafc; }
+.planet-table tbody tr:last-child td { border-bottom: none; }
+
+/* ── Dasha table ── */
+.dasha-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.dasha-table th {
+  background: #f1f5f9;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+.dasha-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.dasha-table tbody tr:last-child td { border-bottom: none; }
+.current-period { background: var(--highlight); font-weight: 600; }
+
+/* ── Panchang table ── */
+.panchang-table {
+  border-collapse: collapse;
+  min-width: 400px;
+  font-size: 0.9rem;
+  width: 100%;
+}
+.panchang-table th, .panchang-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+}
+.panchang-table th {
+  background: #f1f5f9;
+  text-align: right;
+  width: 160px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.panchang-table tr:last-child th,
+.panchang-table tr:last-child td { border-bottom: none; }

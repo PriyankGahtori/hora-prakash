@@ -113,8 +113,8 @@ export function renderSouthIndianSVG(planets, lagna) {
     `<rect width="${S}" height="${S}" fill="white" stroke="#333" stroke-width="1.5"/>`,
     // center box
     `<rect x="${cell}" y="${cell}" width="${cell * 2}" height="${cell * 2}" fill="#f9f9f9" stroke="#ccc" stroke-width="1"/>`,
-    `<text x="${S/2}" y="${S/2 - 8}" text-anchor="middle" font-size="11" fill="#999">Rashi</text>`,
-    `<text x="${S/2}" y="${S/2 + 8}" text-anchor="middle" font-size="11" fill="#999">Chart</text>`,
+    `<text x="${S/2}" y="${S/2 - 6}" text-anchor="middle" font-size="15" font-weight="600" fill="#4f46e5">Rashi</text>`,
+    `<text x="${S/2}" y="${S/2 + 14}" text-anchor="middle" font-size="15" font-weight="600" fill="#4f46e5">Chart</text>`,
   ]
 
   for (const { sign, col, row } of SI_CELLS) {

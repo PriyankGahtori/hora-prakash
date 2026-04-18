@@ -13,41 +13,43 @@ let autocompleteTimeout = null
 export function renderInputTab() {
   const panel = document.getElementById('tab-input')
   panel.innerHTML = `
-    <form id="birth-form">
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" id="inp-name" required placeholder="Full name" />
-      </div>
-      <div class="form-group">
-        <label>Date of Birth</label>
-        <input type="date" id="inp-dob" required />
-      </div>
-      <div class="form-group">
-        <label>Time of Birth</label>
-        <input type="time" id="inp-tob" required />
-      </div>
-      <div class="form-group">
-        <label>Birth Location</label>
-        <input type="text" id="inp-location" required placeholder="Type city name..." autocomplete="off" />
-        <ul id="location-suggestions"></ul>
-      </div>
-      <div class="form-group coords-row">
-        <div>
-          <label>Latitude</label>
-          <input type="number" id="inp-lat" step="0.0001" placeholder="e.g. 19.0760" />
+    <div class="card">
+      <form id="birth-form">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="inp-name" required placeholder="Full name" />
         </div>
-        <div>
-          <label>Longitude</label>
-          <input type="number" id="inp-lon" step="0.0001" placeholder="e.g. 72.8777" />
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input type="date" id="inp-dob" required />
         </div>
-        <div>
-          <label>Timezone</label>
-          <input type="text" id="inp-tz" placeholder="e.g. Asia/Kolkata" readonly />
+        <div class="form-group">
+          <label>Time of Birth</label>
+          <input type="time" id="inp-tob" required />
         </div>
-      </div>
-      <button type="submit" id="btn-calculate">Calculate Chart</button>
-      <p id="calc-error" class="error"></p>
-    </form>
+        <div class="form-group">
+          <label>Birth Location</label>
+          <input type="text" id="inp-location" required placeholder="Type city name…" autocomplete="off" />
+          <ul id="location-suggestions"></ul>
+        </div>
+        <div class="form-group coords-row">
+          <div>
+            <label>Latitude</label>
+            <input type="number" id="inp-lat" step="0.0001" placeholder="e.g. 19.0760" />
+          </div>
+          <div>
+            <label>Longitude</label>
+            <input type="number" id="inp-lon" step="0.0001" placeholder="e.g. 72.8777" />
+          </div>
+          <div>
+            <label>Timezone</label>
+            <input type="text" id="inp-tz" placeholder="e.g. Asia/Kolkata" readonly />
+          </div>
+        </div>
+        <button type="submit" id="btn-calculate">Calculate Chart</button>
+        <p id="calc-error" class="error"></p>
+      </form>
+    </div>
   `
 
   document.getElementById('inp-location').addEventListener('input', onLocationInput)
