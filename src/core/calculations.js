@@ -39,9 +39,8 @@ export function getNakshatraInfo(lon) {
 export function calcBirthChart(jd, lat, lon) {
   const swe = getSwe()
 
-  // Houses + lagna (sidereal via set_sid_mode already set)
-  // Use houses_ex with sidereal flag for sidereal cusps
-  const housesResult = swe.houses(jd, lat, lon, 'P')
+  // Use houses_ex with SEFLG_SIDEREAL (65536) to get sidereal cusps
+  const housesResult = swe.houses_ex(jd, 65536, lat, lon, 'P')
   // cusps is 1-indexed: cusps[1]..cusps[12]
   const lagnaLon = housesResult.ascmc[0]
   const houseCusps = Array.from(housesResult.cusps).slice(1, 13)  // [cusp1..cusp12]
@@ -77,6 +76,7 @@ export function calcBirthChart(jd, lat, lon) {
     degree: lagnaLonNorm % 30,
     house: 1,
     nakshatra: lagnaInfo.name,
+    nakshatraLord: lagnaInfo.lord,
     pada: lagnaInfo.pada,
   }
 
