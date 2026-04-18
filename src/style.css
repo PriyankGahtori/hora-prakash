@@ -260,3 +260,30 @@ h3 {
 }
 .panchang-table tr:last-child th,
 .panchang-table tr:last-child td { border-bottom: none; }
+
+/* ── Responsive tables ── */
+@media (max-width: 600px) {
+  body { padding: 0.75rem 0.5rem; }
+
+  header { padding: 0.75rem 1rem; gap: 0.75rem; }
+  h1 { font-size: 1.1rem; }
+  h1 img { width: 28px !important; height: 28px !important; }
+
+  .card { padding: 1rem; }
+
+  .coords-row { grid-template-columns: 1fr 1fr; }
+  .coords-row > div:last-child { grid-column: 1 / -1; }
+
+  /* Scrollable wrapper for wide tables */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  .planet-table, .dasha-table, .panchang-table { min-width: 480px; }
+
+  .planet-table th, .planet-table td,
+  .dasha-table th,  .dasha-table td,
+  .panchang-table th, .panchang-table td { padding: 0.35rem 0.4rem; font-size: 0.8rem; }
+
+  .panchang-table th { width: 110px; }
+
+  #chart-container { max-width: 100%; }
+}

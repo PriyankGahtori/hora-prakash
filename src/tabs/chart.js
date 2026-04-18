@@ -23,7 +23,7 @@ export function renderChart() {
         ${renderChartSVG(planets, lagna, chartStyle)}
       </div>
       <h3>Planetary Positions</h3>
-      <table class="planet-table">
+      <div class="table-scroll"><table class="planet-table">
         <thead>
           <tr><th>Planet</th><th>Sign</th><th>Deg</th><th>House</th><th>Nakshatra</th><th>Pada</th><th>R</th></tr>
         </thead>
@@ -47,7 +47,7 @@ export function renderChart() {
             <td></td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
   `
 

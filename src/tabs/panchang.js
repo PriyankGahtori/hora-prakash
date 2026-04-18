@@ -18,7 +18,7 @@ export function renderPanchang() {
     <div class="card">
       <h2>Panchang — ${birth.dob}</h2>
       <p style="color:var(--muted);font-size:0.85rem;margin-top:0.2rem;margin-bottom:1rem">${birth.location || birth.lat + ', ' + birth.lon}</p>
-      <table class="panchang-table">
+      <div class="table-scroll"><table class="panchang-table">
         <tbody>
           <tr><th>Tithi</th><td>${p.tithi.name} (${p.tithi.num}/30)</td></tr>
           <tr><th>Vara</th><td>${p.vara.name} — Lord: ${p.vara.lord}</td></tr>
@@ -30,7 +30,7 @@ export function renderPanchang() {
           <tr><th>Rahu Kalam</th><td>${fmtTime(p.rahuKalam.start)} – ${fmtTime(p.rahuKalam.end)}</td></tr>
           <tr><th>Gulika Kalam</th><td>${fmtTime(p.gulikaKalam.start)} – ${fmtTime(p.gulikaKalam.end)}</td></tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
   `
 }

@@ -38,10 +38,10 @@ export function renderDasha() {
     <div class="card">
       <h2>Vimshottari Dasha — ${birth.name}</h2>
       <p style="color:var(--muted);font-size:0.85rem;margin-top:0.2rem;margin-bottom:1rem">Click a Mahadasha row to expand Antardashas</p>
-      <table class="dasha-table">
+      <div class="table-scroll"><table class="dasha-table">
         <thead><tr><th>Period</th><th>Start</th><th>End</th></tr></thead>
         <tbody>${rows}</tbody>
-      </table>
+      </table></div>
     </div>
   `
 
