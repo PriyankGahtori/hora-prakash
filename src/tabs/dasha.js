@@ -73,12 +73,25 @@ export function renderDasha() {
 }
 
 function toggleSiblings(row, attr) {
-  let next = row.nextElementSibling
-  if (!next || !next.hasAttribute(attr)) return false
-  const willShow = next.style.display === 'none'
-  while (next && next.hasAttribute(attr)) {
-    next.style.display = willShow ? '' : 'none'
-    next = next.nextElementSibling
+  // Find first matching sibling (may be preceded by interleaved rows of other types)
+  let probe = row.nextElementSibling
+  while (probe && !probe.hasAttribute(attr)) probe = probe.nextElementSibling
+  if (!probe) return false
+
+  const willShow = probe.style.display === 'none'
+
+  // Walk all siblings until we hit a row that belongs to neither antar nor prat level
+  let cur = row.nextElementSibling
+  while (cur) {
+    if (cur.hasAttribute(attr)) {
+      cur.style.display = willShow ? '' : 'none'
+    } else if (cur.hasAttribute('data-prat') || cur.hasAttribute('data-antar')) {
+      // interleaved child rows — hide when collapsing, leave hidden when expanding
+      if (!willShow) cur.style.display = 'none'
+    } else {
+      break // reached the next maha row
+    }
+    cur = cur.nextElementSibling
   }
   return willShow
 }
