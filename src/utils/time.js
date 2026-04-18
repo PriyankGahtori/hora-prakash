@@ -16,10 +16,14 @@ export function toJulianDay(dateStr, timeStr, timezone) {
 
 function localToUTC(localISO, timezone) {
   const parts = localISO.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/)
+  if (!parts) throw new Error(`Invalid date/time string: "${localISO}"`)
   const [, y, mo, d, h, m] = parts.map(Number)
   const probe = new Date(Date.UTC(y, mo - 1, d, h, m))
   const tzOffset = getTZOffsetMinutes(probe, timezone)
-  return new Date(probe.getTime() - tzOffset * 60000)
+  const candidate = new Date(probe.getTime() - tzOffset * 60000)
+  // Re-apply offset at the corrected UTC instant to handle DST transitions
+  const tzOffset2 = getTZOffsetMinutes(candidate, timezone)
+  return new Date(probe.getTime() - tzOffset2 * 60000)
 }
 
 function getTZOffsetMinutes(date, timezone) {
@@ -32,7 +36,7 @@ function dateToJD(date) {
   const y = date.getUTCFullYear()
   const m = date.getUTCMonth() + 1
   const d = date.getUTCDate()
-  const h = date.getUTCHours() + date.getUTCMinutes() / 60
+  const h = date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600
   let Y = y, M = m
   if (M <= 2) { Y -= 1; M += 12 }
   const A = Math.floor(Y / 100)
@@ -58,8 +62,9 @@ export function jdToDate(jd) {
   const day = b - dd - Math.floor(30.6001 * e)
   const month = e < 14 ? e - 1 : e - 13
   const year = month > 2 ? c - 4716 : c - 4715
-  const hours = f * 24
-  const hh = Math.floor(hours)
-  const mins = Math.floor((hours - hh) * 60)
-  return new Date(Date.UTC(year, month - 1, day, hh, mins))
+  const totalSeconds = f * 86400
+  const hh   = Math.floor(totalSeconds / 3600)
+  const mins = Math.floor((totalSeconds % 3600) / 60)
+  const secs = Math.floor(totalSeconds % 60)
+  return new Date(Date.UTC(year, month - 1, day, hh, mins, secs))
 }
