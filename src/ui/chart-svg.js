@@ -105,19 +105,19 @@ export function renderNorthIndianSVG(planets, lagna) {
     const poly = NI_POLYS[cell]
     parts.push(`<polygon points="${toPts(poly)}" fill="none" stroke="#94a3b8" stroke-width="1.2"/>`)
 
-    const { minX, minY, maxX, maxY } = bbox(poly)
-    const cx = (minX + maxX) / 2
+    // Always use true centroid for X — bbox midpoint is wrong for asymmetric triangles
+    const [cx, cy] = centroid(poly)
+    const { minY, maxY } = bbox(poly)
+    const cellH = maxY - minY
 
-    // Sign abbr anchored to top of polygon
+    // Sign abbr: upper quarter of cell, centered on true centroid X
     const signFontSize = 14
-    const signY = minY + signFontSize + 2
+    const signY = minY + cellH * 0.22 + signFontSize
     const sign = cellToSign[cell]
     parts.push(`<text x="${cx.toFixed(1)}" y="${signY.toFixed(1)}" text-anchor="middle" font-size="${signFontSize}" font-weight="600" fill="#64748b" ${FONT}>${SIGN_ABBR[sign - 1]}</text>`)
 
     // Planets fill remaining area below sign label
-    const planetAreaTop = signY + 4
-    const planetAreaBottom = maxY - 4
-    parts.push(placePlanets(cellPlanets[cell], cx, planetAreaTop, planetAreaBottom))
+    parts.push(placePlanets(cellPlanets[cell], cx, signY + 4, maxY - 6))
   }
 
   parts.push('</svg>')
