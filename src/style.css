@@ -18,3 +18,7 @@ nav { display: flex; gap: 0.5rem; }
 #btn-calculate { padding: 0.5rem 1.5rem; background: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
 #btn-calculate:disabled { opacity: 0.6; cursor: not-allowed; }
 .error { color: red; margin-top: 0.5rem; font-size: 0.9rem; }
+.dasha-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.dasha-table th, .dasha-table td { border: 1px solid #ddd; padding: 0.3rem 0.6rem; }
+.dasha-table thead { background: #f0f0f0; }
+.current-period { background: #fffbe6; font-weight: bold; }
