@@ -17,7 +17,7 @@ export async function initSwissEph() {
   // locateFile redirects .wasm/.data lookups to /hora-prakash/ (public/ in dev, dist root in prod)
   const base = import.meta.env.BASE_URL  // '/hora-prakash/' in prod, '/' in dev
   const instance = new SwissEph({
-    locateFile: (file) => `${base}${file}`,
+    locateFile: (file) => `${base}wasm/${file}`,
   })
   await instance.initSwissEph()
 
