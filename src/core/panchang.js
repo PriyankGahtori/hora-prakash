@@ -81,7 +81,7 @@ export function calcPanchang(jd, lat, lon) {
 
   // Karana: each karana = 6° of Moon-Sun diff
   const karanaNum = Math.floor(diff / 6)
-  const karanaName = KARANA_NAMES[karanaNum % 7]
+  const karanaName = KARANA_NAMES[karanaNum % 11]
 
   // Sunrise and Sunset via rise_trans
   // Search from start of the JD day (midnight UT of that day)
