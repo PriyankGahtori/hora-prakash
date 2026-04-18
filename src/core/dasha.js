@@ -27,11 +27,15 @@ const NAKSHATRA_DASHA_INDEX = [
  * @returns {DashaNode[]}
  */
 export function calcDasha(moon, dobStr) {
+  if (!moon || typeof moon.lon !== 'number' || typeof moon.nakshatraIndex !== 'number') {
+    throw new Error('calcDasha: valid Moon planet object with lon and nakshatraIndex required')
+  }
   const nakshatraIdx = moon.nakshatraIndex
   const dashaStartIndex = NAKSHATRA_DASHA_INDEX[nakshatraIdx]
 
   const nakshatraSpan = 360 / 27
-  const posInNakshatra = moon.lon % nakshatraSpan
+  const normalizedLon = ((moon.lon % 360) + 360) % 360
+  const posInNakshatra = normalizedLon % nakshatraSpan
   const fractionElapsed = posInNakshatra / nakshatraSpan
   const fractionRemaining = 1 - fractionElapsed
   const balanceYears = DASHA_SEQUENCE[dashaStartIndex].years * fractionRemaining

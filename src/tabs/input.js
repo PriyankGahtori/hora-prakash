@@ -123,6 +123,7 @@ async function onFormSubmit(e) {
     const jd = toJulianDay(dob, tob, tz)
     const { planets, lagna, houses } = calcBirthChart(jd, lat, lon)
     const moon = planets.find(p => p.name === 'Moon')
+    if (!moon) throw new Error('Moon position could not be calculated.')
     const dasha = calcDasha(moon, dob)
     const panchang = calcPanchang(jd, lat, lon)
 
@@ -160,5 +161,5 @@ function escapeHtml(str) {
 }
 
 function escapeAttr(str) {
-  return str.replace(/"/g,'&quot;')
+  return str.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')
 }
