@@ -1,11 +1,14 @@
-/* coi-serviceworker v0.1.7 - https://github.com/gzuidhof/coi-serviceworker */
+/* coi-serviceworker — injects COOP/COEP headers for WASM cross-origin isolation */
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 
 async function handleFetch(request) {
-  if (request.cache === "only-if-cached" && request.mode !== "same-origin") return;
-  const r = await fetch(request).catch(() => {});
-  if (!r) return;
+  // Skip non-GET and opaque cross-origin requests (e.g. Google Fonts)
+  if (request.method !== "GET") return fetch(request);
+
+  const r = await fetch(request).catch(() => null);
+  if (!r || r.status === 0 || !r.ok && r.type === "opaque") return r;
+
   const newHeaders = new Headers(r.headers);
   newHeaders.set("Cross-Origin-Embedder-Policy", "require-corp");
   newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
