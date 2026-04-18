@@ -48,11 +48,11 @@ export function renderInputTab() {
         <div class="form-group coords-row">
           <div>
             <label>Latitude</label>
-            <input type="number" id="inp-lat" step="0.0001" value="${DELHI.lat}" />
+            <input type="number" id="inp-lat" step="any" value="${DELHI.lat}" />
           </div>
           <div>
             <label>Longitude</label>
-            <input type="number" id="inp-lon" step="0.0001" value="${DELHI.lon}" />
+            <input type="number" id="inp-lon" step="any" value="${DELHI.lon}" />
           </div>
           <div>
             <label>Timezone</label>
@@ -107,8 +107,8 @@ async function onSuggestionClick(e) {
     const tz = await getTimezone(lat, lon)
     selectedLocation = { displayName: li.dataset.name, lat, lon, timezone: tz }
     document.getElementById('inp-location').value = li.dataset.name
-    document.getElementById('inp-lat').value = lat
-    document.getElementById('inp-lon').value = lon
+    document.getElementById('inp-lat').value = Math.round(lat * 10000) / 10000
+    document.getElementById('inp-lon').value = Math.round(lon * 10000) / 10000
     document.getElementById('inp-tz').value = tz
     clearSuggestions()
   } catch (err) {
