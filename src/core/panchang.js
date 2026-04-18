@@ -96,8 +96,10 @@ export function calcPanchang(jd, lat, lon) {
   const dayStart = Math.floor(jd - 0.5) + 0.5  // midnight UT
   const riseResult = swe.rise_trans(dayStart, 0, lon, lat, 0, 1)  // body=0 (Sun), flags=1 (rise)
   const setResult  = swe.rise_trans(dayStart, 0, lon, lat, 0, 2)  // flags=2 (set)
-  const sunrise = riseResult ? jdToDate(riseResult[0]) : null
-  const sunset  = setResult  ? jdToDate(setResult[0])  : null
+  // rise_trans returns JD ~2,400,000 for valid results; 0 or small values = wrapper failure
+  const isValidJd = (r) => r && r[0] > 1000000
+  const sunrise = isValidJd(riseResult) ? jdToDate(riseResult[0]) : null
+  const sunset  = isValidJd(setResult)  ? jdToDate(setResult[0])  : null
 
   // Rahu Kalam and Gulika Kalam (8 equal parts of daytime)
   const dayDuration = (sunrise && sunset) ? (sunset.getTime() - sunrise.getTime()) : 43200000
