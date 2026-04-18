@@ -4,6 +4,7 @@ import { isCurrentPeriod } from '../core/dasha.js'
 
 export function renderDasha() {
   const panel = document.getElementById('tab-dasha')
+  if (!state.dasha || !state.birth) return
   const { dasha, birth } = state
 
   const rows = dasha.map(maha => {
@@ -45,19 +46,44 @@ export function renderDasha() {
     const row = e.target.closest('tr')
     if (!row) return
     if (row.hasAttribute('data-toggle-antar')) {
-      toggleSiblings(row, 'data-antar')
+      const opening = toggleSiblings(row, 'data-antar')
+      setArrow(row, opening)
+      if (!opening) {
+        // collapse all pratyantar rows when closing the maha
+        let next = row.nextElementSibling
+        while (next && next.hasAttribute('data-antar')) {
+          next.style.display = 'none'
+          setArrow(next, false)
+          let prat = next.nextElementSibling
+          while (prat && prat.hasAttribute('data-prat')) {
+            prat.style.display = 'none'
+            prat = prat.nextElementSibling
+          }
+          next = prat
+        }
+      }
     } else if (row.hasAttribute('data-toggle-prat')) {
-      toggleSiblings(row, 'data-prat')
+      const opening = toggleSiblings(row, 'data-prat')
+      setArrow(row, opening)
     }
   })
 }
 
 function toggleSiblings(row, attr) {
   let next = row.nextElementSibling
+  if (!next || !next.hasAttribute(attr)) return false
+  const willShow = next.style.display === 'none'
   while (next && next.hasAttribute(attr)) {
-    next.style.display = next.style.display === 'none' ? '' : 'none'
+    next.style.display = willShow ? '' : 'none'
     next = next.nextElementSibling
   }
+  return willShow
+}
+
+function setArrow(row, open) {
+  const td = row.querySelector('td')
+  if (!td) return
+  td.textContent = td.textContent.replace(/^[▶▼] /, (open ? '▼ ' : '▶ '))
 }
 
 function fmt(date) {

@@ -12,7 +12,7 @@ export function renderChart() {
   panel.innerHTML = `
     <h2>${birth.name} — Birth Chart</h2>
     <p style="color:#666;margin-bottom:1rem">${birth.dob} ${birth.tob} | ${birth.location || birth.lat + '°, ' + birth.lon + '°'}</p>
-    <div id="chart-svg-container" style="max-width:420px;margin:0 auto 2rem">
+    <div id="chart-container">
       ${renderChartSVG(planets, lagna)}
     </div>
     <h3>Planetary Positions</h3>

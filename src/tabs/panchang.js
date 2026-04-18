@@ -3,12 +3,15 @@ import { state } from '../state.js'
 
 export function renderPanchang() {
   const panel = document.getElementById('tab-panchang')
+  if (!state.panchang || !state.birth) return
   const { panchang, birth } = state
   const p = panchang
 
   const fmtTime = (d) => {
     if (!d) return '—'
-    return d.toUTCString().slice(17, 22) + ' UTC'
+    const hh = String(d.getUTCHours()).padStart(2, '0')
+    const mm = String(d.getUTCMinutes()).padStart(2, '0')
+    return `${hh}:${mm} UTC`
   }
 
   panel.innerHTML = `
