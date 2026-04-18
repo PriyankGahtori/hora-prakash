@@ -22,3 +22,6 @@ nav { display: flex; gap: 0.5rem; }
 .dasha-table th, .dasha-table td { border: 1px solid #ddd; padding: 0.3rem 0.6rem; }
 .dasha-table thead { background: #f0f0f0; }
 .current-period { background: #fffbe6; font-weight: bold; }
+.panchang-table { border-collapse: collapse; min-width: 400px; font-size: 0.95rem; }
+.panchang-table th, .panchang-table td { border: 1px solid #ddd; padding: 0.4rem 0.8rem; }
+.panchang-table th { background: #f5f5f5; text-align: right; width: 140px; }
