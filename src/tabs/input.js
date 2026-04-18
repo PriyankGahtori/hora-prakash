@@ -106,8 +106,8 @@ async function onFormSubmit(e) {
   const name = document.getElementById('inp-name').value.trim()
   const dob  = document.getElementById('inp-dob').value
   const tob  = document.getElementById('inp-tob').value
-  const lat  = parseFloat(document.getElementById('inp-lat').value)
-  const lon  = parseFloat(document.getElementById('inp-lon').value)
+  const lat  = Math.round(parseFloat(document.getElementById('inp-lat').value) * 10000) / 10000
+  const lon  = Math.round(parseFloat(document.getElementById('inp-lon').value) * 10000) / 10000
   const tz   = document.getElementById('inp-tz').value.trim()
 
   if (!name || !dob || !tob || isNaN(lat) || isNaN(lon) || !tz) {

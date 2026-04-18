@@ -58,7 +58,7 @@ function planetLines(ps, cx, cy) {
     const label = `${p.abbr}${r} ${deg}`
     const color = p.isLagna ? '#c00' : '#111'
     const weight = p.isLagna ? 'bold' : 'normal'
-    return `<text x="${cx}" y="${cy + 4 + i * 12}" text-anchor="middle" font-size="10" fill="${color}" font-weight="${weight}">${label}</text>`
+    return `<text x="${cx}" y="${cy + 4 + i * 14}" text-anchor="middle" font-size="12" fill="${color}" font-weight="${weight}">${label}</text>`
   }).join('\n')
 }
 
@@ -90,7 +90,7 @@ export function renderNorthIndianSVG(planets, lagna) {
     parts.push(`<polygon points="${toPts(poly)}" fill="none" stroke="#555" stroke-width="1"/>`)
     const [cx, cy] = centroid(poly)
     const sign = cellToSign[cell]
-    parts.push(`<text x="${cx}" y="${cy - 8}" text-anchor="middle" font-size="8" fill="#aaa">${SIGN_ABBR[sign - 1]}</text>`)
+    parts.push(`<text x="${cx}" y="${cy - 10}" text-anchor="middle" font-size="10" fill="#aaa">${SIGN_ABBR[sign - 1]}</text>`)
     parts.push(planetLines(cellPlanets[cell], cx, cy))
   }
 
@@ -126,9 +126,9 @@ export function renderSouthIndianSVG(planets, lagna) {
     parts.push(`<rect x="${x}" y="${y}" width="${cell}" height="${cell}" fill="${isLagnaCell ? '#fff8f0' : 'white'}" stroke="#555" stroke-width="1"/>`)
 
     // sign label top-left
-    parts.push(`<text x="${x + 4}" y="${y + 13}" font-size="9" fill="#aaa">${SIGN_ABBR[sign - 1]}</text>`)
+    parts.push(`<text x="${x + 4}" y="${y + 15}" font-size="11" fill="#aaa">${SIGN_ABBR[sign - 1]}</text>`)
     // house number top-right
-    parts.push(`<text x="${x + cell - 4}" y="${y + 13}" text-anchor="end" font-size="9" fill="${isLagnaCell ? '#c00' : '#bbb'}">${house}</text>`)
+    parts.push(`<text x="${x + cell - 4}" y="${y + 15}" text-anchor="end" font-size="11" fill="${isLagnaCell ? '#c00' : '#bbb'}">${house}</text>`)
 
     // planets
     const ps = signPlanets[sign] || []
@@ -139,7 +139,7 @@ export function renderSouthIndianSVG(planets, lagna) {
       const label = `${p.abbr}${r} ${deg}`
       const color = p.isLagna ? '#c00' : '#111'
       const weight = p.isLagna ? 'bold' : 'normal'
-      parts.push(`<text x="${cx}" y="${cy + i * 12}" text-anchor="middle" font-size="10" fill="${color}" font-weight="${weight}">${label}</text>`)
+      parts.push(`<text x="${cx}" y="${cy + i * 14}" text-anchor="middle" font-size="12" fill="${color}" font-weight="${weight}">${label}</text>`)
     })
   }
 
