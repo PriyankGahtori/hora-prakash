@@ -2,7 +2,6 @@
 export default {
   base: '/hora-prakash/',
   build: { outDir: 'dist' },
-  assetsInclude: ['**/*.wasm', '**/*.data'],
   optimizeDeps: {
     exclude: ['swisseph-wasm'],
   },

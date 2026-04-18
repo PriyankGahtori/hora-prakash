@@ -14,7 +14,11 @@ export async function initSwissEph() {
 
   const mod = await import('swisseph-wasm')
   const SwissEph = mod.default
-  const instance = new SwissEph()
+  // locateFile redirects .wasm/.data lookups to /hora-prakash/ (public/ in dev, dist root in prod)
+  const base = import.meta.env.BASE_URL  // '/hora-prakash/' in prod, '/' in dev
+  const instance = new SwissEph({
+    locateFile: (file) => `${base}${file}`,
+  })
   await instance.initSwissEph()
 
   // Set Lahiri ayanamsa (SE_SIDM_LAHIRI = 1)
