@@ -82,7 +82,7 @@ async function findSolarReturn(targetLon, seedJd, swe) {
     while (diff > 180)  diff -= 360
     while (diff < -180) diff += 360
     if (Math.abs(diff) > 350) break
-    jd += diff / 360
+    jd += diff  // Sun moves ~1°/day, so degrees ≈ days
   }
   return jd
 }
